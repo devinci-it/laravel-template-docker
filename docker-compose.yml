@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  laravel-dev:
+    image: devincino/laravel-template:v1.0.0
+    ports:
+      - "8000:8000"
+      - "2222:22"
+    volumes:
+      - .:/var/www
+    depends_on:
+      - db
+      - vite
+    environment:
+      - MIX_VITE_HOST=http://vite:5173
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=myapp
+      - MYSQL_USER=myappuser
+      - MYSQL_PASSWORD=mypassword
+
+  vite:
+    image: node:latest
+    command: npm run dev -- --host 0.0.0.0
+    working_dir: /var/www
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/var/www
+
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: myapp
+      MYSQL_USER: myappuser
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3346:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:
